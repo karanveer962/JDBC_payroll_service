@@ -7,10 +7,22 @@ public class Main{
 
         EmployeePayrollService payrollService = new EmployeePayrollService();
 
+        try {
+            List<EmployeePayroll> payrollData = payrollService.retrieveEmployeePayrollData();
+            for (EmployeePayroll it : payrollData)
+                System.out.println(it);
+        }
+        catch (EmployeePayrollException e) {
+            e.printStackTrace();
+        }
 
-        List<EmployeePayroll> payrollData = payrollService.retrieveEmployeePayrollData();
-         for(EmployeePayroll it:payrollData)
-             System.out.println(it);
+        try {
+            // Update the salary for Employee Merissa
+            payrollService.updateEmployeeSalary("Merissa", 3000000.00);
+
+        } catch (EmployeePayrollException e) {
+            e.printStackTrace();
+        }
+    }
 
     }
-}

@@ -13,7 +13,7 @@ import java.sql.Statement;
 public class EmployeePayrollService {
 
     // UC-2: Retrieve Employee Payroll Data from Database
-    public List<EmployeePayroll> retrieveEmployeePayrollData() {
+    public List<EmployeePayroll> retrieveEmployeePayrollData() throws EmployeePayrollException{
         List<EmployeePayroll> employeePayrollList = new ArrayList<>();
 
 
@@ -37,7 +37,6 @@ public class EmployeePayrollService {
                 employeePayroll.setNetPay(resultSet.getDouble("net_pay"));
                 employeePayroll.setStartDate(resultSet.getString("start"));
                 employeePayroll.setGender(resultSet.getString("gender"));
-                // Add other attributes...
 
                 employeePayrollList.add(employeePayroll);
             }
@@ -46,8 +45,7 @@ public class EmployeePayrollService {
             statement.close();
             connection.close();
         } catch (SQLException e) {
-            e.printStackTrace();
-//            throw new EmployeePayrollException("Error retrieving Employee Payroll data", e);
+            throw new EmployeePayrollException("Error retrieving Employee Payroll data", e);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -55,6 +53,46 @@ public class EmployeePayrollService {
         return employeePayrollList;
     }
 
-    // Other methods...
+    // UC-3: Update Salary for Employee Terisa
+    public void updateEmployeeSalary(String employeeName, double newSalary) throws EmployeePayrollException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/payroll_service", "root", "waheguruJI");
+
+            // Update salary in the database
+            String updateQuery = "UPDATE employee_payroll SET basic_pay = ? WHERE name = ?";
+            preparedStatement = connection.prepareStatement(updateQuery);
+            preparedStatement.setDouble(1, newSalary);
+            preparedStatement.setString(2, employeeName);
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected == 0) {
+                throw new EmployeePayrollException("Employee not found: " + employeeName);
+            }
+            System.out.println("\nEmployee "+ employeeName+" salary updated successfully" );
+
+            List<EmployeePayroll> payrollData = retrieveEmployeePayrollData();
+            for (EmployeePayroll it : payrollData){
+                if(it.getName().equals(employeeName))
+                    System.out.println(it);
+            }
+
+        } catch (SQLException e) {
+            throw new EmployeePayrollException("Error updating employee salary", e);
+        } finally {
+            // Close resources in the finally block
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }
