@@ -5,20 +5,21 @@ import java.util.*;
 public class Main{
     public static void main(String[] args) {
 
-        EmployeePayrollService payrollService = new EmployeePayrollService();
+        EmployeePayrollService payrollService = EmployeePayrollService.getInstance();
 
         try {
+
             List<EmployeePayroll> payrollData = payrollService.retrieveEmployeePayrollData();
             for (EmployeePayroll it : payrollData)
                 System.out.println(it);
-        }
-        catch (EmployeePayrollException e) {
-            e.printStackTrace();
-        }
 
-        try {
-            // Update the salary for Employee Merissa
-            payrollService.updateEmployeeSalary("Merissa", 3000000.00);
+
+            // Retrieve payroll data by name
+            EmployeePayroll employeePayroll = payrollService.retrieveEmployeeDetails("Merissa");
+            System.out.println("Employee Payroll Details:\n" + employeePayroll);
+
+            // Update salary for Employee Terisa and print updated details
+            payrollService.updateEmployeeSalary("Merissa", 3500000.00);
 
         } catch (EmployeePayrollException e) {
             e.printStackTrace();

@@ -12,10 +12,74 @@ import java.sql.Statement;
 
 public class EmployeePayrollService {
 
+    // Singleton instance
+    private static EmployeePayrollService instance;
+
+    // Cached PreparedStatement
+    private static PreparedStatement preparedStatement;
+
+    // Private constructor for Singleton
+    private EmployeePayrollService() {
+        // Initialize the database connection and PreparedStatement
+        initializeDatabase();
+    }
+
+    // Method to get the singleton instance
+    public static EmployeePayrollService getInstance() {
+        if (instance == null) {
+            instance = new EmployeePayrollService();
+        }
+        return instance;
+    }
+
+    // Initialize the database connection and PreparedStatement
+    private void initializeDatabase() {
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/payroll_service", "root", "waheguruJI");
+            preparedStatement = connection.prepareStatement("SELECT * FROM employee_payroll WHERE name = ?");
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle the exception appropriately
+        }
+    }
+
+    // Retrieve employee details from the database
+    public EmployeePayroll retrieveEmployeeDetails(String employeeName) throws EmployeePayrollException {
+        try {
+            // Set the name parameter in the PreparedStatement
+            preparedStatement.setString(1, employeeName);
+
+            // Execute the query
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Check if employee exists
+            if (!resultSet.next()) {
+                throw new EmployeePayrollException("Employee not found: " + employeeName);
+            }
+
+            // Reuse the ResultSet to populate the EmployeePayroll object
+            EmployeePayroll employeePayroll = new EmployeePayroll();
+            employeePayroll.setId(resultSet.getInt("id"));
+            employeePayroll.setName(resultSet.getString("name"));
+            employeePayroll.setPhoneNumber(resultSet.getString("phone_number"));
+            employeePayroll.setAddress(resultSet.getString("address"));
+            employeePayroll.setDepartment(resultSet.getString("department"));
+            employeePayroll.setBasicPay(resultSet.getInt("basic_pay"));
+            employeePayroll.setDeductions(resultSet.getDouble("deductions"));
+            employeePayroll.setTaxablePay(resultSet.getDouble("taxable_pay"));
+            employeePayroll.setTax(resultSet.getDouble("tax"));
+            employeePayroll.setNetPay(resultSet.getDouble("net_pay"));
+            employeePayroll.setStartDate(resultSet.getString("start"));
+            employeePayroll.setGender(resultSet.getString("gender"));
+
+            return employeePayroll;
+        } catch (SQLException e) {
+            throw new EmployeePayrollException("Error retrieving employee payroll data", e);
+        }
+    }
+
     // UC-2: Retrieve Employee Payroll Data from Database
     public List<EmployeePayroll> retrieveEmployeePayrollData() throws EmployeePayrollException{
         List<EmployeePayroll> employeePayrollList = new ArrayList<>();
-
 
         try {
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/payroll_service", "root", "waheguruJI");
@@ -72,11 +136,7 @@ public class EmployeePayrollService {
             }
             System.out.println("\nEmployee "+ employeeName+" salary updated successfully" );
 
-            List<EmployeePayroll> payrollData = retrieveEmployeePayrollData();
-            for (EmployeePayroll it : payrollData){
-                if(it.getName().equals(employeeName))
-                    System.out.println(it);
-            }
+           System.out.println(retrieveEmployeeDetails(employeeName));
 
         } catch (SQLException e) {
             throw new EmployeePayrollException("Error updating employee salary", e);
