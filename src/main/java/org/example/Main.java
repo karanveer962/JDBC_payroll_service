@@ -7,7 +7,7 @@ public class Main{
 
         EmployeePayrollService payrollService = EmployeePayrollService.getInstance();
         try {
-            // UC-7: Add a new employee to the payroll using transactions
+            // UC-8: Add a new employee to the payroll using transactions
             EmployeePayroll newEmployee = new EmployeePayroll();
             newEmployee.setName("Sidhi");
             newEmployee.setPhoneNumber("7566564985");
@@ -21,13 +21,13 @@ public class Main{
             newEmployee.setStartDate("2022-01-01");
             newEmployee.setGender("F");
 
-            payrollService.addEmployeeToPayroll(newEmployee);
-            System.out.println("New employee added successfully: ");
+            payrollService.addEmployeeToPayrollDetails(newEmployee);
+            System.out.println("New employee added successfully and record updated as well in payroll_details table: ");
 
           for(EmployeePayroll it:payrollService.retrieveEmployeePayrollData()){
               System.out.println(it);
           }
-
+          payrollService.display_payroll_details();
         } catch (EmployeePayrollException e) {
             e.printStackTrace();
         }
