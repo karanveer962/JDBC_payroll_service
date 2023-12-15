@@ -342,6 +342,69 @@ public class EmployeePayrollService {
         preparedStatement.close();
     }
 
+    // UC-12: Remove Employee from the Payroll
+    public void removeEmployeeFromPayroll(String employeeName) throws EmployeePayrollException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/payroll_service", "root", "waheguruJI");
+
+            // Set is_active to false for the specified employee
+            String updateQuery = "UPDATE employee_payroll SET is_active = FALSE WHERE name = ?";
+            preparedStatement = connection.prepareStatement(updateQuery);
+            preparedStatement.setString(1, employeeName);
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected == 0) {
+                throw new EmployeePayrollException("Employee not found: " + employeeName);
+            }
+            System.out.println("\nEmployee " + employeeName + " removed from payroll successfully");
+        } catch (SQLException e) {
+            throw new EmployeePayrollException("Error removing employee from payroll", e);
+        } finally {
+            // Close resources in the finally block
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    // UC-12: Retrieve only active employees
+    public void retrieveActiveEmployeePayrollData() throws EmployeePayrollException {
+        List<EmployeePayroll> activeEmployeePayrollList = new ArrayList<>();
+        try {
+            // Assuming you have a connection to your database
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/payroll_service", "root", "waheguruJI");
+
+            // Assuming you have a Statement to execute the query
+            Statement statement = connection.createStatement();
+
+            // Execute the query to fetch all records from payroll_service table
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM employee_payroll where is_active=1");
+            // Iterate through the result set and display each record
+            System.out.println("\nActive employees payroll data  is as follows: ");
+            System.out.println("Id"+"\t"+"Name");
+            while (resultSet.next()) {
+                // Assuming you have appropriate column names, update them accordingly
+                int column1 = resultSet.getInt(1);
+                String column2 = resultSet.getString(2);
+
+                // Display the retrieved data
+                System.out.println(column1+"\t"+column2);
+            }
+
+            // Close resources
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     private EmployeePayroll mapResultSetToEmployeePayroll(ResultSet resultSet) throws SQLException {
         EmployeePayroll employeePayroll = new EmployeePayroll();
         employeePayroll.setId(resultSet.getInt("id"));
