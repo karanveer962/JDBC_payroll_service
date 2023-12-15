@@ -7,14 +7,27 @@ public class Main{
 
         EmployeePayrollService payrollService = EmployeePayrollService.getInstance();
         try {
-            // UC-5: Retrieve employees by date range
-            List<EmployeePayroll> employeesByDateRange = payrollService.retrieveEmployeesByDateRange("2020-01-01", "2021-04-06");
-            System.out.println("\nEmployees who have joined in the date range:");
-            for (EmployeePayroll employee : employeesByDateRange) {
-                System.out.println(employee);
-            }
-            // UC-6: Perform stats using database functions
-            payrollService.doEmployeeStatistics();
+            // UC-7: Add a new employee to the payroll using transactions
+            EmployeePayroll newEmployee = new EmployeePayroll();
+            newEmployee.setName("Sidhi");
+            newEmployee.setPhoneNumber("7566564985");
+            newEmployee.setAddress("Indore near Jai Sweets House");
+            newEmployee.setDepartment("CSE");
+            newEmployee.setBasicPay(90000);
+            newEmployee.setDeductions(1000.0);
+            newEmployee.setTaxablePay(45000.0);
+            newEmployee.setTax(500.0);
+            newEmployee.setNetPay(44500.0);
+            newEmployee.setStartDate("2022-01-01");
+            newEmployee.setGender("F");
+
+            payrollService.addEmployeeToPayroll(newEmployee);
+            System.out.println("New employee added successfully: ");
+
+          for(EmployeePayroll it:payrollService.retrieveEmployeePayrollData()){
+              System.out.println(it);
+          }
+
         } catch (EmployeePayrollException e) {
             e.printStackTrace();
         }

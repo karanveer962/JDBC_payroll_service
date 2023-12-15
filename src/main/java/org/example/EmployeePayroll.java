@@ -65,32 +65,60 @@ public class EmployeePayroll {
     public void setAddress(String address){
         this.address=address;
     }
+    public String getAddress(){
+        return this.address;
+    }
     public void setBasicPay(int bp){
         this.basicPay=bp;
+    }
+    public int getBasicPay(){
+        return this.basicPay;
     }
     public void setPhoneNumber(String num){
         this.phoneNumber=num;
     }
+    public String getPhoneNumber(){
+        return this.phoneNumber;
+    }
     public void setTax(Double t){
         this.tax=t;
     }
+    public Double getTax(){
+       return this.tax;
+    }
+
     public void setTaxablePay(Double t){
       this.taxablePay=t;
     }
+    public Double getTaxablePay(){
+        return this.taxablePay;
+    }
     public void setDepartment(String department){
         this.department=department;
+    }
+    public String getDepartment(){
+        return this.department;
     }
     public void setGender(String gender){
         if(gender!=null)
           this.gender=gender.charAt(0);
 
     }
+    public String getGender(){
+       return String.valueOf(this.gender);
+    }
 
     public void setNetPay(Double t){
         this.netPay=t;
     }
+    public Double getNetPay(){
+        return this.netPay;
+    }
     public void setDeductions(Double t){
         this.deductions=t;
+    }
+    public Double getDeductions(){
+      return  this.deductions;
     }
     public String getStartDate() {
         return startDate;
